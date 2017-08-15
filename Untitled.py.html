@@ -1,0 +1,79 @@
+
+# coding: utf-8
+
+# In[1]:
+
+import sqlite3
+
+
+# In[2]:
+
+db = sqlite3.connect('survey.db')
+
+
+# In[3]:
+
+import pandas as pd
+
+
+# In[7]:
+
+# Plot some readings vs date
+df = pd.read_sql_query('''SELECT * FROM Survey JOIN Visited
+                          ON Visited.id = Survey.taken''', db)
+df
+
+
+# In[8]:
+
+df = pd.read_sql_query('''SELECT * FROM Survey JOIN Visited
+                          ON Visited.id = Survey.taken
+                          WHERE dated IS NOT NULL''', db)
+df
+
+
+# In[9]:
+
+for i in range(0, 17):
+    if (df.loc[i, 'quant'] == 'sal') & (df.loc[i, 'reading'] > 1):
+        df.loc[i, 'reading'] = df.loc[i, 'reading']/100
+        print("We changed the reading at row:", i)
+
+
+# In[10]:
+
+df
+
+
+# In[11]:
+
+saldf = df[df.quant == 'sal']
+saldf
+
+
+# In[13]:
+
+from datetime import datetime
+
+X = saldf.dated
+X = pd.to_datetime(X).astype(datetime)
+X
+
+
+# In[14]:
+
+Y = saldf.loc[:, 'reading']
+Y
+
+
+# In[15]:
+
+import matplotlib.pyplot as plt
+
+
+# In[16]:
+
+get_ipython().magic('matplotlib inline')
+
+plt.plot_date(X, Y)
+
